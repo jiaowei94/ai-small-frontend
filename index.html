@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ai-small.xyz - 智能全栈服务平台</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 50px;
+    }
+    header {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); }
+    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    
+    /* 品牌介绍 Hero 区 */
+    .hero { text-align: center; padding: 3rem 1rem; background: var(--card-bg); border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border-color); }
+    .hero h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--accent-color); }
+    .hero p { color: var(--text-muted); max-width: 600px; margin: 0 auto 1.5rem; }
+    
+    /* Auth 注册登录模块 */
+    .auth-card {
+      background: var(--card-bg); border-radius: 12px; padding: 2rem;
+      border: 1px solid var(--border-color); max-width: 480px; margin: 0 auto 3rem;
+    }
+    .auth-card h2 { font-size: 1.3rem; margin-bottom: 1.5rem; text-align: center; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .input-row { display: flex; gap: 0.5rem; }
+    input {
+      width: 100%; padding: 0.75rem; background: #0f172a; border: 1px solid var(--border-color);
+      border-radius: 6px; color: #fff; font-size: 0.95rem; outline: none;
+    }
+    input:focus { border-color: var(--accent-color); }
+    button {
+      padding: 0.75rem 1.2rem; background: var(--accent-color); color: #0f172a; border: none;
+      border-radius: 6px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; white-space: nowrap;
+    }
+    button:hover { opacity: 0.9; }
+    .btn-full { width: 100%; margin-top: 1rem; }
+    .status-msg { margin-top: 1rem; padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; background: #0f172a; color: var(--accent-color); display: none; }
+
+    /* 各功能模块导航 */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+    .feature-card {
+      background: var(--card-bg); border-radius: 12px; padding: 1.5rem;
+      border: 1px solid var(--border-color); text-decoration: none; color: inherit; transition: transform 0.2s, border-color 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); border-color: var(--accent-color); }
+    .feature-card h3 { font-size: 1.1rem; color: var(--accent-color); margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.85rem; color: var(--text-muted); }
+  </style>
+  <script src="config.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo">ai-small.xyz</div>
+    <div id="user-info" style="font-size:0.9rem; color: var(--text-muted);">未登录</div>
+  </header>
+
+  <div class="container">
+    
+    <!-- 品牌介绍 -->
+    <section class="hero">
+      <h1>全栈 AI 智能生态终端</h1>
+      <p>无缝集成多端 AI 对话、跨国语言翻译协同社区、AI 视觉膳食分析与高智能 AI 交互游戏。</p>
+    </section>
+
+    <!-- Auth 注册与登录框 -->
+    <section class="auth-card" id="auth-section">
+      <h2 id="auth-title">账户注册 / 登录</h2>
+      
+      <div class="form-group">
+        <label>电子邮箱</label>
+        <div class="input-row">
+          <input type="email" id="email" placeholder="name@example.com">
+          <button id="send-code-btn" onclick="sendCode()">获取验证码</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>6 位邮件验证码</label>
+        <input type="text" id="code" placeholder="输入验证码">
+      </div>
+
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" id="password" placeholder="设置或输入密码">
+      </div>
+
+      <button class="btn-full" onclick="submitAuth()">确认登录 / 注册</button>
+      <div id="status-msg" class="status-msg"></div>
+    </section>
+
+    <!-- 功能模块链接 -->
+    <h2 style="margin-bottom: 1rem; font-size: 1.2rem;">聚合工作台功能导航</h2>
+    <section class="features-grid">
+      <a href="/aaa" class="feature-card">
+        <h3>/aaa 免登录 AI 聊天</h3>
+        <p>基于 Gemini 大模型驱动的极速智能问答终端</p>
+      </a>
+      <a href="/ddd" class="feature-card">
+        <h3>/ddd 协同社区</h3>
+        <p>多语言实时对照翻译与频道交流社区</p>
+      </a>
+      <a href="/eee" class="feature-card">
+        <h3>/eee 膳食健康识别</h3>
+        <p>上传图片秒级识别食物卡路里与营养分析</p>
+      </a>
+      <a href="/ooo" class="feature-card">
+        <h3>/ooo 互动游戏中心</h3>
+        <p>包含五子棋 AI 对战与经典互动小游戏</p>
+      </a>
+    </section>
+
+  </div>
+
+  <script>
+    async function sendCode() {
+      const email = document.getElementById('email').value.trim();
+      const msgBox = document.getElementById('status-msg');
+      if(!email) return alert('请填入有效邮箱');
+      
+      msgBox.style.display = 'block';
+      msgBox.innerText = '正在发送验证码...';
+
+      try {
+        const res = await fetch(`${CONFIG.API_BASE_URL}/api/auth/send-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        msgBox.innerText = data.message || (data.success ? '验证码发送成功，请检查邮箱' : '发送失败，请重试');
+      } catch (err) {
+        msgBox.innerText = '请求失败，请检查网络或后端配置';
+      }
+    }
+
+    async function submitAuth() {
+      const email = document.getElementById('email').value.trim();
+      const code = document.getElementById('code').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const msgBox = document.getElementById('status-msg');
+
+      if(!email || !code) return alert('请输入邮箱和验证码');
+
+      msgBox.style.display = 'block';
+      msgBox.innerText = '正在验证登录...';
+
+      try {
+        const res = await fetch(`${CONFIG.API_BASE_URL}/api/auth/verify-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code, password })
+        });
+        const data = await res.json();
+        if(data.success) {
+          msgBox.innerText = '验证成功！登录中...';
+          localStorage.setItem('auth_token', data.token || 'user_active');
+          document.getElementById('user-info').innerText = `已登录: ${email}`;
+          document.getElementById('auth-section').style.display = 'none';
+        } else {
+          msgBox.innerText = data.message || '验证失败';
+        }
+      } catch(err) {
+        msgBox.innerText = '网络异常，提交失败';
+      }
+    }
+  </script>
+</body>
+</html>
