@@ -31,13 +31,9 @@
     }
     .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); }
     .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-    
-    /* 品牌介绍 Hero 区 */
     .hero { text-align: center; padding: 3rem 1rem; background: var(--card-bg); border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border-color); }
     .hero h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--accent-color); }
     .hero p { color: var(--text-muted); max-width: 600px; margin: 0 auto 1.5rem; }
-    
-    /* Auth 注册登录模块 */
     .auth-card {
       background: var(--card-bg); border-radius: 12px; padding: 2rem;
       border: 1px solid var(--border-color); max-width: 480px; margin: 0 auto 3rem;
@@ -58,8 +54,6 @@
     button:hover { opacity: 0.9; }
     .btn-full { width: 100%; margin-top: 1rem; }
     .status-msg { margin-top: 1rem; padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; background: #0f172a; color: var(--accent-color); display: none; }
-
-    /* 各功能模块导航 */
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
     .feature-card {
       background: var(--card-bg); border-radius: 12px; padding: 1.5rem;
@@ -72,24 +66,19 @@
   <script src="config.js"></script>
 </head>
 <body>
-
   <header>
     <div class="logo">ai-small.xyz</div>
     <div id="user-info" style="font-size:0.9rem; color: var(--text-muted);">未登录</div>
   </header>
 
   <div class="container">
-    
-    <!-- 品牌介绍 -->
     <section class="hero">
       <h1>全栈 AI 智能生态终端</h1>
       <p>无缝集成多端 AI 对话、跨国语言翻译协同社区、AI 视觉膳食分析与高智能 AI 交互游戏。</p>
     </section>
 
-    <!-- Auth 注册与登录框 -->
     <section class="auth-card" id="auth-section">
       <h2 id="auth-title">账户注册 / 登录</h2>
-      
       <div class="form-group">
         <label>电子邮箱</label>
         <div class="input-row">
@@ -97,22 +86,14 @@
           <button id="send-code-btn" onclick="sendCode()">获取验证码</button>
         </div>
       </div>
-
       <div class="form-group">
         <label>6 位邮件验证码</label>
         <input type="text" id="code" placeholder="输入验证码">
       </div>
-
-      <div class="form-group">
-        <label>密码</label>
-        <input type="password" id="password" placeholder="设置或输入密码">
-      </div>
-
       <button class="btn-full" onclick="submitAuth()">确认登录 / 注册</button>
       <div id="status-msg" class="status-msg"></div>
     </section>
 
-    <!-- 功能模块链接 -->
     <h2 style="margin-bottom: 1rem; font-size: 1.2rem;">聚合工作台功能导航</h2>
     <section class="features-grid">
       <a href="/aaa" class="feature-card">
@@ -132,18 +113,25 @@
         <p>包含五子棋 AI 对战与经典互动小游戏</p>
       </a>
     </section>
-
   </div>
 
   <script>
+    // 页面加载时自动检查登录状态（解决刷新页面跳出未登录问题）
+    window.onload = function() {
+      const savedEmail = localStorage.getItem('user_email');
+      const token = localStorage.getItem('auth_token');
+      if (token && savedEmail) {
+        document.getElementById('user-info').innerText = `已登录: ${savedEmail}`;
+        document.getElementById('auth-section').style.display = 'none';
+      }
+    };
+
     async function sendCode() {
       const email = document.getElementById('email').value.trim();
       const msgBox = document.getElementById('status-msg');
-      if(!email) return alert('请填入有效邮箱');
-      
+      if (!email) return alert('请填入有效邮箱');
       msgBox.style.display = 'block';
       msgBox.innerText = '正在发送验证码...';
-
       try {
         const res = await fetch(`${CONFIG.API_BASE_URL}/api/auth/send-code`, {
           method: 'POST',
@@ -162,12 +150,9 @@
       const code = document.getElementById('code').value.trim();
       const password = document.getElementById('password').value.trim();
       const msgBox = document.getElementById('status-msg');
-
-      if(!email || !code) return alert('请输入邮箱和验证码');
-
+      if (!email || !code) return alert('请输入邮箱和验证码');
       msgBox.style.display = 'block';
       msgBox.innerText = '正在验证登录...';
-
       try {
         const res = await fetch(`${CONFIG.API_BASE_URL}/api/auth/verify-code`, {
           method: 'POST',
@@ -175,15 +160,18 @@
           body: JSON.stringify({ email, code, password })
         });
         const data = await res.json();
-        if(data.success) {
+        if (data.success) {
           msgBox.innerText = '验证成功！登录中...';
-          localStorage.setItem('auth_token', data.token || 'user_active');
+          // 保存登录凭证与邮箱到本地存储
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_email', email);
+          
           document.getElementById('user-info').innerText = `已登录: ${email}`;
           document.getElementById('auth-section').style.display = 'none';
         } else {
           msgBox.innerText = data.message || '验证失败';
         }
-      } catch(err) {
+      } catch (err) {
         msgBox.innerText = '网络异常，提交失败';
       }
     }
