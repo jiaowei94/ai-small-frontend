@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ai-small.xyz | 极简 AI 工具箱</title>
+    <!-- 引入配置文件 -->
+    <script src="./config.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        h1 { color: #38bdf8; text-align: center; margin-bottom: 10px; }
+        p.subtitle { color: #94a3b8; text-align: center; margin-bottom: 30px; }
+        
+        .card {
+            background-color: #334155;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #475569;
+        }
+        .card h2 { color: #f1f5f9; font-size: 1.2rem; margin-bottom: 10px; }
+        
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        input[type="email"], input[type="file"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background-color: #0f172a;
+            color: #fff;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background-color: #0369a1; }
+        
+        .result-box {
+            background-color: #0f172a;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #38bdf8;
+            min-height: 40px;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ai-small.xyz</h1>
+        <p class="subtitle">全栈功能调试与服务中心</p>
+
+        <!-- 1. 邮箱验证码发送测试区 (匹配 server.js 中的 /api/auth/send-code) -->
+        <div class="card">
+            <h2>📧 1. 验证码发送功能测试 (/api/auth/send-code)</h2>
+            <div class="input-group">
+                <input type="email" id="emailInput" placeholder="请输入你的接收邮箱" />
+                <button onclick="sendCode()">发送验证码</button>
+            </div>
+            <div id="emailResult" class="result-box">等待操作...</div>
+        </div>
+
+        <!-- 2. 智能膳食识别测试区 (匹配 server.js 中的 /api/diet/analyze) -->
+        <div class="card">
+            <h2>🥗 2. 智能膳食图片识别测试 (/api/diet/analyze)</h2>
+            <div class="input-group">
+                <input type="file" id="imageInput" accept="image/*" />
+                <button onclick="analyzeDiet()">上传图片并分析</button>
+            </div>
+            <div id="dietResult" class="result-box">等待上传图片...</div>
+        </div>
+    </div>
+
+    <script>
+        // 获取配置中的后端 Base URL
+        const baseUrl = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL) 
+            ? CONFIG.API_BASE_URL 
+            : 'https://ai-small-backend-miucbuupi-xie7.vercel.app';
+
+        // 1. 发送验证码逻辑
+        async function sendCode() {
+            const email = document.getElementById('emailInput').value;
+            const resultDiv = document.getElementById('emailResult');
+            if (!email) {
+                resultDiv.innerText = '错误：请输入邮箱地址！';
+                return;
+            }
+            resultDiv.innerText = '发送中，请稍候...';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/auth/send-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await response.json();
+                resultDiv.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                resultDiv.innerText = '请求失败：' + err.message;
+            }
+        }
+
+        // 2. 智能膳食分析逻辑 (将图片转为 Base64 后传给后端)
+        async function analyzeDiet() {
+            const fileInput = document.getElementById('imageInput');
+            const resultDiv = document.getElementById('dietResult');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                resultDiv.innerText = '错误：请选择一张菜品图片！';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            resultDiv.innerText = '正在读取图片并分析中...';
+
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                try {
+                    const response = await fetch(`${baseUrl}/api/diet/analyze`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageBase64: base64Image })
+                    });
+                    const data = await response.json();
+                    resultDiv.innerText = JSON.stringify(data, null, 2);
+                } catch (err) {
+                    resultDiv.innerText = '分析失败：' + err.message;
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
