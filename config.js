@@ -1,9 +1,9 @@
 const CONFIG = {
-  // Vercel 后端 API 总网址
-  API_BASE_URL: "https://ai-small-backend-miucbuupi-xie7.vercel.app",
+  // Vercel 后端 API 最新部署主网址
+  API_BASE_URL: "https://ai-small-backend-xie7.vercel.app",
   
   // WebSocket/实时接口地址
-  WS_BASE_URL: "wss://ai-small-backend-miucbuupi-xie7.vercel.app",
+  WS_BASE_URL: "wss://ai-small-backend-xie7.vercel.app",
 
   // Supabase 项目配置
   SUPABASE_URL: "https://zcvgirshnyqenkjknrci.supabase.co",
