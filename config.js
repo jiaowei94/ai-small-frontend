@@ -1,5 +1,5 @@
 const CONFIG = {
-  // Vercel 后端 API 总网址（已更新为您的最新部署地址）
+  // Vercel 后端 API 总网址
   API_BASE_URL: "https://ai-small-backend-miucbuupi-xie7.vercel.app",
   
   // WebSocket/实时接口地址
