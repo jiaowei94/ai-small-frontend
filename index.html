@@ -3,306 +3,266 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI-Small Hub</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>ai-small.xyz | 极简 AI 全栈平台</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh; }
+    
+    /* 侧边栏布局 */
+    #sidebar { width: 240px; background: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; transition: all 0.3s ease; }
+    .logo { font-size: 20px; font-weight: bold; color: #38bdf8; text-decoration: none; display: block; margin-bottom: 30px; }
+    .nav-links { list-style: none; }
+    .nav-links li { margin-bottom: 12px; }
+    .nav-links a { color: #94a3b8; text-decoration: none; font-size: 15px; display: block; padding: 10px 12px; border-radius: 6px; transition: 0.2s; }
+    .nav-links a:hover, .nav-links a.active { background: #334155; color: #f8fafc; }
+    
+    /* 主内容区 */
+    #main-content { flex: 1; padding: 40px; overflow-y: auto; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+    .user-profile { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: #38bdf8; }
+    
+    /* 按钮样式 */
+    .btn { background: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+    .btn:hover { background: #0369a1; }
+    .btn-secondary { background: #334155; color: #f8fafc; }
+    .btn-secondary:hover { background: #475569; }
+    
+    /* 品牌介绍卡片 */
+    .hero-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; border-radius: 12px; padding: 40px; margin-bottom: 30px; }
+    .hero-card h1 { font-size: 32px; margin-bottom: 16px; color: #f8fafc; }
+    .hero-card p { font-size: 16px; color: #94a3b8; line-height: 1.6; max-width: 650px; }
+    
+    /* 功能网格 */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; text-decoration: none; color: inherit; transition: transform 0.2s; }
+    .card:hover { transform: translateY(-4px); }
+    .card h3 { margin-bottom: 8px; color: #38bdf8; }
+    .card p { font-size: 13px; color: #94a3b8; }
+    
+    /* 模态框 Auth Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
+    .modal-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; width: 360px; padding: 30px; }
+    .modal-box h2 { margin-bottom: 20px; font-size: 20px; text-align: center; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+    .form-group input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: white; font-size: 14px; outline: none; }
+    .form-inline { display: flex; gap: 8px; }
+    .form-inline input { flex: 1; }
+    .msg-box { font-size: 12px; margin-top: 10px; text-align: center; min-height: 18px; }
+    .msg-error { color: #f87171; }
+    .msg-success { color: #4ade80; }
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body>
 
-  <!-- 顶部导航 -->
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <span class="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">AI-SMALL</span>
-        <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">v1.1</span>
-      </div>
-      <div id="nav-user-area" class="flex items-center space-x-4">
-        <!-- 未登录/已登录状态由 JS 动态渲染 -->
-      </div>
+  <!-- 侧边栏导航 -->
+  <div id="sidebar">
+    <div>
+      <a href="/" class="logo">ai-small.xyz</a>
+      <ul class="nav-links">
+        <li><a href="/" class="active">🏠 控制台 / 首页</a></li>
+        <li><a href="/aaa">💬 /aaa AI 聊天</a></li>
+        <li><a href="/ddd">🌐 /ddd 实时协同</a></li>
+        <li><a href="/eee">🥗 /eee 智能膳食</a></li>
+        <li><a href="/ooo">🎮 /ooo 游戏中心</a></li>
+      </ul>
     </div>
-  </header>
-
-  <!-- 主要内容区域 -->
-  <div class="flex-1 flex max-w-7xl w-full mx-auto px-4 py-6 gap-6">
-
-    <!-- 未登录状态：展示品牌介绍 & 认证表单卡片 -->
-    <main id="view-guest" class="w-full grid md:grid-cols-2 gap-8 items-center">
-      <!-- 左侧：品牌与功能点介绍 -->
-      <div class="space-y-6">
-        <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">
-          免卡高效的 <br/>
-          <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent">全栈 AI & 协作平台</span>
-        </h1>
-        <p class="text-slate-400 text-lg">
-          集成了全网最新大模型能力，无缝连接智能对话、多语言实时协作社区、健康膳食分析与高智力 AI 游戏对战。
-        </p>
-        <div class="grid grid-cols-2 gap-4 pt-4">
-          <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-800">
-            <div class="font-bold text-blue-400">/aaa 免登录 AI</div>
-            <div class="text-xs text-slate-400 mt-1">快速体验大模型能力</div>
-          </div>
-          <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-800">
-            <div class="font-bold text-indigo-400">/ddd 协同社区</div>
-            <div class="text-xs text-slate-400 mt-1">实时多语言与频道控制</div>
-          </div>
-          <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-800">
-            <div class="font-bold text-emerald-400">/eee 膳食健康</div>
-            <div class="text-xs text-slate-400 mt-1">图像分析卡路里与成分</div>
-          </div>
-          <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-800">
-            <div class="font-bold text-purple-400">/ooo 互动对战</div>
-            <div class="text-xs text-slate-400 mt-1">五子棋 AI 与游戏排行榜</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 右侧： Auth 认证面板 -->
-      <div class="bg-slate-800/80 border border-slate-700/60 p-6 rounded-2xl shadow-xl backdrop-blur max-w-md w-full justify-self-center">
-        <!-- Tab 切换 -->
-        <div class="flex border-b border-slate-700 mb-6">
-          <button id="tab-login-btn" onclick="switchTab('login')" class="flex-1 pb-3 font-semibold text-blue-400 border-b-2 border-blue-400">密码登录</button>
-          <button id="tab-register-btn" onclick="switchTab('register')" class="flex-1 pb-3 font-semibold text-slate-400 border-b-2 border-transparent">新用户注册</button>
-          <button id="tab-reset-btn" onclick="switchTab('reset')" class="flex-1 pb-3 font-semibold text-slate-400 border-b-2 border-transparent">找回密码</button>
-        </div>
-
-        <!-- 1. 登录表单 -->
-        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">邮箱地址</label>
-            <input type="email" id="login-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="your@qq.com" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">密码</label>
-            <input type="password" id="login-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="••••••••" />
-          </div>
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition text-sm">立即登录</button>
-        </form>
-
-        <!-- 2. 注册表单 (需验证码) -->
-        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">注册邮箱 (支持 QQ 邮箱)</label>
-            <input type="email" id="reg-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="your@qq.com" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">邮箱验证码</label>
-            <div class="flex gap-2">
-              <input type="text" id="reg-code" required class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="6位数验证码" />
-              <button type="button" id="btn-send-reg-code" onclick="sendCode('register')" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg whitespace-nowrap">获取验证码</button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">昵称 (可选)</label>
-            <input type="text" id="reg-nickname" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="极客玩家" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">设置登录密码</label>
-            <input type="password" id="reg-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="••••••••" />
-          </div>
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition text-sm">注册并完成创建</button>
-        </form>
-
-        <!-- 3. 找回密码表单 (需验证码) -->
-        <form id="form-reset" onsubmit="handleResetPassword(event)" class="space-y-4 hidden">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">注册邮箱</label>
-            <input type="email" id="reset-email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="your@qq.com" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">邮箱验证码</label>
-            <div class="flex gap-2">
-              <input type="text" id="reset-code" required class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="6位数验证码" />
-              <button type="button" id="btn-send-reset-code" onclick="sendCode('reset_password')" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-2 rounded-lg whitespace-nowrap">获取验证码</button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">新密码</label>
-            <input type="password" id="reset-new-password" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="输入新密码" />
-          </div>
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition text-sm">提交修改</button>
-        </form>
-
-        <div id="auth-msg" class="mt-4 text-xs text-center min-h-[1rem]"></div>
-      </div>
-    </main>
-
-    <!-- 已登录状态：展示侧边栏工作台 -->
-    <div id="view-dashboard" class="w-full hidden flex gap-6">
-      <aside class="w-64 bg-slate-800/40 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between shrink-0">
-        <div class="space-y-2">
-          <div class="text-xs font-bold text-slate-500 px-3 uppercase tracking-wider mb-2">功能导航</div>
-          <a href="/aaa" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white transition">
-            <span>💬</span><span class="text-sm font-medium">/aaa 免登录 AI</span>
-          </a>
-          <a href="/ddd" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white transition">
-            <span>🌐</span><span class="text-sm font-medium">/ddd 协同社区</span>
-          </a>
-          <a href="/eee" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white transition">
-            <span>🥗</span><span class="text-sm font-medium">/eee 膳食识别</span>
-          </a>
-          <a href="/ooo" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-slate-300 hover:text-white transition">
-            <span>🎮</span><span class="text-sm font-medium">/ooo 互动游戏</span>
-          </a>
-        </div>
-
-        <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50 flex items-center space-x-3">
-          <img id="dash-user-avatar" src="" class="w-9 h-9 rounded-full bg-slate-700" alt="Avatar"/>
-          <div class="overflow-hidden flex-1">
-            <div id="dash-user-name" class="text-sm font-semibold truncate"></div>
-            <div id="dash-user-email" class="text-xs text-slate-400 truncate"></div>
-          </div>
-        </div>
-      </aside>
-
-      <main class="flex-1 bg-slate-800/30 border border-slate-800 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-        <div class="text-5xl mb-4">🚀</div>
-        <h2 class="text-2xl font-bold mb-2">欢迎进入 AI-Small 个人工作台</h2>
-        <p class="text-slate-400 max-w-md text-sm">登录状态保持中，你可以从左侧菜单无缝切换至各个核心业务模块进行操作。</p>
-      </main>
+    <div id="sidebar-footer">
+      <p style="font-size: 12px; color: #64748b;">Version 3.0 (No-Card)</p>
     </div>
-
   </div>
 
-  <script src="config.js"></script>
-  <script src="auth.js"></script>
+  <!-- 主内容 -->
+  <div id="main-content">
+    <div class="header-bar">
+      <h2>工作台</h2>
+      <div id="auth-zone">
+        <button class="btn" onclick="openAuthModal()">登录 / 注册</button>
+      </div>
+    </div>
+
+    <!-- 品牌介绍区块 -->
+    <div class="hero-card">
+      <h1>轻量级 AI 驱动的独立全栈工作台</h1>
+      <p>完全运行于全球边缘计算堆栈（Vercel + Cloudflare Pages + Supabase）。无需复杂配置，开箱即用体验多模态 AI 与实时协同工具。</p>
+    </div>
+
+    <!-- 业务模块快捷入口 -->
+    <div class="grid">
+      <a href="/aaa" class="card">
+        <h3>/aaa 免登录聊天</h3>
+        <p>基于 Gemini API 的轻量智能对话，随时随地解答疑问。</p>
+      </a>
+      <a href="/ddd" class="card">
+        <h3>/ddd 实时社区</h3>
+        <p>基于 Supabase Realtime 的多语言翻译与频道交流。</p>
+      </a>
+      <a href="/eee" class="card">
+        <h3>/eee 智能膳食</h3>
+        <p>拍照上传食物，视觉 AI 自动分析营养与卡路里成分。</p>
+      </a>
+      <a href="/ooo" class="card">
+        <h3>/ooo 互动游戏</h3>
+        <p>经典小游戏与五子棋高智商 AI 对战平台。</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- Auth 模态弹窗 -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-box">
+      <h2>账号登录 / 注册</h2>
+      <div class="form-group">
+        <label>邮箱地址</label>
+        <input type="email" id="authEmail" placeholder="yourname@domain.com">
+      </div>
+      <div class="form-group">
+        <label>验证码</label>
+        <div class="form-inline">
+          <input type="text" id="authCode" placeholder="6 位验证码" maxlength="6">
+          <button class="btn btn-secondary" id="btnSendCode" onclick="handleSendCode()">获取验证码</button>
+        </div>
+      </div>
+      <div class="msg-box" id="authMsg"></div>
+      <button class="btn" style="width: 100%; margin-top: 15px;" id="btnVerify" onclick="handleVerify()">验证并登录</button>
+      <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeAuthModal()">取消</button>
+    </div>
+  </div>
+
+  <!-- 引入全局配置文件 -->
+  <script src="./config.js"></script>
   <script>
-    // Tab 切换控制
-    function switchTab(tab) {
-      document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
-      document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
-      document.getElementById('form-reset').classList.toggle('hidden', tab !== 'reset');
+    // 渲染用户状态或登录按钮
+    function renderAuthState() {
+      const authZone = document.getElementById('auth-zone');
+      const userJson = localStorage.getItem('ai_small_user');
+      const token = localStorage.getItem('ai_small_token');
 
-      document.getElementById('tab-login-btn').className = tab === 'login' ? 'flex-1 pb-3 font-semibold text-blue-400 border-b-2 border-blue-400' : 'flex-1 pb-3 font-semibold text-slate-400 border-b-2 border-transparent';
-      document.getElementById('tab-register-btn').className = tab === 'register' ? 'flex-1 pb-3 font-semibold text-blue-400 border-b-2 border-blue-400' : 'flex-1 pb-3 font-semibold text-slate-400 border-b-2 border-transparent';
-      document.getElementById('tab-reset-btn').className = tab === 'reset' ? 'flex-1 pb-3 font-semibold text-blue-400 border-b-2 border-blue-400' : 'flex-1 pb-3 font-semibold text-slate-400 border-b-2 border-transparent';
-      
-      showMsg('');
+      if (userJson && token) {
+        const user = JSON.parse(userJson);
+        authZone.innerHTML = `
+          <div class="user-profile">
+            <img src="${user.avatar_url}" class="avatar" alt="Avatar">
+            <div>
+              <div style="font-size: 14px; font-weight: bold;">${user.nickname}</div>
+              <div style="font-size: 11px; color: #94a3b8;">${user.email}</div>
+            </div>
+            <button class="btn btn-secondary" style="margin-left: 10px; padding: 6px 12px; font-size: 12px;" onclick="handleLogout()">退出</button>
+          </div>
+        `;
+      } else {
+        authZone.innerHTML = `<button class="btn" onclick="openAuthModal()">登录 / 注册</button>`;
+      }
     }
 
-    function showMsg(msg, isError = false) {
-      const el = document.getElementById('auth-msg');
-      el.textContent = msg;
-      el.className = `mt-4 text-xs text-center min-h-[1rem] ${isError ? 'text-red-400' : 'text-emerald-400'}`;
+    function openAuthModal() {
+      document.getElementById('authModal').style.display = 'flex';
+      document.getElementById('authMsg').innerText = '';
     }
 
-    // 倒计时流控
-    function startCountdown(btnId) {
-      const btn = document.getElementById(btnId);
-      let sec = 60;
-      btn.disabled = true;
-      const timer = setInterval(() => {
-        sec--;
-        btn.textContent = `${sec}s 后重试`;
-        if (sec <= 0) {
-          clearInterval(timer);
-          btn.disabled = false;
-          btn.textContent = '获取验证码';
-        }
-      }, 1000);
+    function closeAuthModal() {
+      document.getElementById('authModal').style.display = 'none';
     }
 
-    // 发送验证码
-    async function sendCode(type) {
-      const emailId = type === 'register' ? 'reg-email' : 'reset-email';
-      const btnId = type === 'register' ? 'btn-send-reg-code' : 'btn-send-reset-code';
-      const email = document.getElementById(emailId).value;
+    // 发送验证码处理
+    async function handleSendCode() {
+      const email = document.getElementById('authEmail').value.trim();
+      const msgBox = document.getElementById('authMsg');
+      const btnSend = document.getElementById('btnSendCode');
 
-      if (!email) {
-        showMsg('请先输入邮箱地址', true);
+      if (!email || !email.includes('@')) {
+        msgBox.className = 'msg-box msg-error';
+        msgBox.innerText = '请输入有效的邮箱地址';
         return;
       }
 
-      showMsg('验证码发送中...');
-      const res = await Auth.sendCode(email, type);
-      if (res.success) {
-        showMsg(res.message);
-        startCountdown(btnId);
-      } else {
-        showMsg(res.message, true);
+      msgBox.className = 'msg-box';
+      msgBox.innerText = '正在发送验证码...';
+      btnSend.disabled = true;
+
+      try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/send-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          msgBox.className = 'msg-box msg-success';
+          msgBox.innerText = '验证码已发送，请查收邮箱';
+          
+          // 60秒倒计时
+          let countdown = 60;
+          const timer = setInterval(() => {
+            countdown--;
+            btnSend.innerText = `${countdown}s 后重试`;
+            if (countdown <= 0) {
+              clearInterval(timer);
+              btnSend.innerText = '获取验证码';
+              btnSend.disabled = false;
+            }
+          }, 1000);
+        } else {
+          msgBox.className = 'msg-box msg-error';
+          msgBox.innerText = data.error || '发送失败';
+          btnSend.disabled = false;
+        }
+      } catch (err) {
+        msgBox.className = 'msg-box msg-error';
+        msgBox.innerText = '网络连接失败，请稍后再试';
+        btnSend.disabled = false;
       }
     }
 
-    // 注册处理
-    async function handleRegister(e) {
-      e.preventDefault();
-      const email = document.getElementById('reg-email').value;
-      const code = document.getElementById('reg-code').value;
-      const nickname = document.getElementById('reg-nickname').value;
-      const password = document.getElementById('reg-password').value;
+    // 校验登录处理
+    async function handleVerify() {
+      const email = document.getElementById('authEmail').value.trim();
+      const code = document.getElementById('authCode').value.trim();
+      const msgBox = document.getElementById('authMsg');
 
-      showMsg('正在注册...');
-      const res = await Auth.register(email, password, code, nickname);
-      if (res.success) {
-        showMsg(res.message);
-        setTimeout(() => switchTab('login'), 1500);
-      } else {
-        showMsg(res.message, true);
+      if (!email || !code) {
+        msgBox.className = 'msg-box msg-error';
+        msgBox.innerText = '请输入邮箱与验证码';
+        return;
+      }
+
+      msgBox.className = 'msg-box';
+      msgBox.innerText = '正在验证登录...';
+
+      try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          localStorage.setItem('ai_small_token', data.token);
+          localStorage.setItem('ai_small_user', JSON.stringify(data.user));
+          closeAuthModal();
+          renderAuthState();
+        } else {
+          msgBox.className = 'msg-box msg-error';
+          msgBox.innerText = data.error || '验证失败';
+        }
+      } catch (err) {
+        msgBox.className = 'msg-box msg-error';
+        msgBox.innerText = '服务器响应异常';
       }
     }
 
-    // 登录处理
-    async function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-
-      showMsg('正在登录...');
-      const res = await Auth.login(email, password);
-      if (res.success) {
-        showMsg('登录成功！正在跳转...');
-        renderState();
-      } else {
-        showMsg(res.message, true);
-      }
+    // 退出登录
+    function handleLogout() {
+      localStorage.removeItem('ai_small_token');
+      localStorage.removeItem('ai_small_user');
+      renderAuthState();
     }
 
-    // 找回密码处理
-    async function handleResetPassword(e) {
-      e.preventDefault();
-      const email = document.getElementById('reset-email').value;
-      const code = document.getElementById('reset-code').value;
-      const newPassword = document.getElementById('reset-new-password').value;
-
-      showMsg('正在提交...');
-      const res = await Auth.resetPassword(email, code, newPassword);
-      if (res.success) {
-        showMsg(res.message);
-        setTimeout(() => switchTab('login'), 1500);
-      } else {
-        showMsg(res.message, true);
-      }
-    }
-
-    // 页面状态渲染与登录切换
-    function renderState() {
-      const user = Auth.getUser();
-      const navArea = document.getElementById('nav-user-area');
-      const viewGuest = document.getElementById('view-guest');
-      const viewDashboard = document.getElementById('view-dashboard');
-
-      if (user) {
-        navArea.innerHTML = `
-          <div class="flex items-center space-x-3">
-            <span class="text-sm font-medium text-slate-300">${user.nickname || user.email}</span>
-            <button onclick="Auth.logout()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg">退出登录</button>
-          </div>
-        `;
-        viewGuest.classList.add('hidden');
-        viewDashboard.classList.remove('hidden');
-
-        document.getElementById('dash-user-avatar').src = user.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id}`;
-        document.getElementById('dash-user-name').textContent = user.nickname || '用户';
-        document.getElementById('dash-user-email').textContent = user.email;
-      } else {
-        navArea.innerHTML = `
-          <button onclick="switchTab('login')" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg">登录 / 注册</button>
-        `;
-        viewGuest.classList.remove('hidden');
-        viewDashboard.classList.add('hidden');
-      }
-    }
-
-    // 初始化检查
-    window.onload = renderState;
+    // 页面载入初始化
+    window.addEventListener('DOMContentLoaded', renderAuthState);
   </script>
 </body>
 </html>
