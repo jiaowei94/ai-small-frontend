@@ -1,268 +1,580 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ai-small.xyz | 极简 AI 全栈平台</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh; }
-    
-    /* 侧边栏布局 */
-    #sidebar { width: 240px; background: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; transition: all 0.3s ease; }
-    .logo { font-size: 20px; font-weight: bold; color: #38bdf8; text-decoration: none; display: block; margin-bottom: 30px; }
-    .nav-links { list-style: none; }
-    .nav-links li { margin-bottom: 12px; }
-    .nav-links a { color: #94a3b8; text-decoration: none; font-size: 15px; display: block; padding: 10px 12px; border-radius: 6px; transition: 0.2s; }
-    .nav-links a:hover, .nav-links a.active { background: #334155; color: #f8fafc; }
-    
-    /* 主内容区 */
-    #main-content { flex: 1; padding: 40px; overflow-y: auto; }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-    .user-profile { display: flex; align-items: center; gap: 12px; }
-    .avatar { width: 36px; height: 36px; border-radius: 50%; background: #38bdf8; }
-    
-    /* 按钮样式 */
-    .btn { background: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500; transition: 0.2s; }
-    .btn:hover { background: #0369a1; }
-    .btn-secondary { background: #334155; color: #f8fafc; }
-    .btn-secondary:hover { background: #475569; }
-    
-    /* 品牌介绍卡片 */
-    .hero-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; border-radius: 12px; padding: 40px; margin-bottom: 30px; }
-    .hero-card h1 { font-size: 32px; margin-bottom: 16px; color: #f8fafc; }
-    .hero-card p { font-size: 16px; color: #94a3b8; line-height: 1.6; max-width: 650px; }
-    
-    /* 功能网格 */
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-    .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; text-decoration: none; color: inherit; transition: transform 0.2s; }
-    .card:hover { transform: translateY(-4px); }
-    .card h3 { margin-bottom: 8px; color: #38bdf8; }
-    .card p { font-size: 13px; color: #94a3b8; }
-    
-    /* 模态框 Auth Modal */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
-    .modal-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; width: 360px; padding: 30px; }
-    .modal-box h2 { margin-bottom: 20px; font-size: 20px; text-align: center; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
-    .form-group input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: white; font-size: 14px; outline: none; }
-    .form-inline { display: flex; gap: 8px; }
-    .form-inline input { flex: 1; }
-    .msg-box { font-size: 12px; margin-top: 10px; text-align: center; min-height: 18px; }
-    .msg-error { color: #f87171; }
-    .msg-success { color: #4ade80; }
-  </style>
-</head>
-<body>
-
-  <!-- 侧边栏导航 -->
-  <div id="sidebar">
-    <div>
-      <a href="/" class="logo">ai-small.xyz</a>
-      <ul class="nav-links">
-        <li><a href="/" class="active">🏠 控制台 / 首页</a></li>
-        <li><a href="/aaa">💬 /aaa AI 聊天</a></li>
-        <li><a href="/ddd">🌐 /ddd 实时协同</a></li>
-        <li><a href="/eee">🥗 /eee 智能膳食</a></li>
-        <li><a href="/ooo">🎮 /ooo 游戏中心</a></li>
-      </ul>
-    </div>
-    <div id="sidebar-footer">
-      <p style="font-size: 12px; color: #64748b;">Version 3.0 (No-Card)</p>
-    </div>
-  </div>
-
-  <!-- 主内容 -->
-  <div id="main-content">
-    <div class="header-bar">
-      <h2>工作台</h2>
-      <div id="auth-zone">
-        <button class="btn" onclick="openAuthModal()">登录 / 注册</button>
-      </div>
-    </div>
-
-    <!-- 品牌介绍区块 -->
-    <div class="hero-card">
-      <h1>轻量级 AI 驱动的独立全栈工作台</h1>
-      <p>完全运行于全球边缘计算堆栈（Vercel + Cloudflare Pages + Supabase）。无需复杂配置，开箱即用体验多模态 AI 与实时协同工具。</p>
-    </div>
-
-    <!-- 业务模块快捷入口 -->
-    <div class="grid">
-      <a href="/aaa" class="card">
-        <h3>/aaa 免登录聊天</h3>
-        <p>基于 Gemini API 的轻量智能对话，随时随地解答疑问。</p>
-      </a>
-      <a href="/ddd" class="card">
-        <h3>/ddd 实时社区</h3>
-        <p>基于 Supabase Realtime 的多语言翻译与频道交流。</p>
-      </a>
-      <a href="/eee" class="card">
-        <h3>/eee 智能膳食</h3>
-        <p>拍照上传食物，视觉 AI 自动分析营养与卡路里成分。</p>
-      </a>
-      <a href="/ooo" class="card">
-        <h3>/ooo 互动游戏</h3>
-        <p>经典小游戏与五子棋高智商 AI 对战平台。</p>
-      </a>
-    </div>
-  </div>
-
-  <!-- Auth 模态弹窗 -->
-  <div class="modal-overlay" id="authModal">
-    <div class="modal-box">
-      <h2>账号登录 / 注册</h2>
-      <div class="form-group">
-        <label>邮箱地址</label>
-        <input type="email" id="authEmail" placeholder="yourname@domain.com">
-      </div>
-      <div class="form-group">
-        <label>验证码</label>
-        <div class="form-inline">
-          <input type="text" id="authCode" placeholder="6 位验证码" maxlength="6">
-          <button class="btn btn-secondary" id="btnSendCode" onclick="handleSendCode()">获取验证码</button>
-        </div>
-      </div>
-      <div class="msg-box" id="authMsg"></div>
-      <button class="btn" style="width: 100%; margin-top: 15px;" id="btnVerify" onclick="handleVerify()">验证并登录</button>
-      <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeAuthModal()">取消</button>
-    </div>
-  </div>
-
-  <!-- 引入全局配置文件 -->
-  <script src="./config.js"></script>
-  <script>
-    // 渲染用户状态或登录按钮
-    function renderAuthState() {
-      const authZone = document.getElementById('auth-zone');
-      const userJson = localStorage.getItem('ai_small_user');
-      const token = localStorage.getItem('ai_small_token');
-
-      if (userJson && token) {
-        const user = JSON.parse(userJson);
-        authZone.innerHTML = `
-          <div class="user-profile">
-            <img src="${user.avatar_url}" class="avatar" alt="Avatar">
-            <div>
-              <div style="font-size: 14px; font-weight: bold;">${user.nickname}</div>
-              <div style="font-size: 11px; color: #94a3b8;">${user.email}</div>
-            </div>
-            <button class="btn btn-secondary" style="margin-left: 10px; padding: 6px 12px; font-size: 12px;" onclick="handleLogout()">退出</button>
-          </div>
-        `;
-      } else {
-        authZone.innerHTML = `<button class="btn" onclick="openAuthModal()">登录 / 注册</button>`;
-      }
-    }
-
-    function openAuthModal() {
-      document.getElementById('authModal').style.display = 'flex';
-      document.getElementById('authMsg').innerText = '';
-    }
-
-    function closeAuthModal() {
-      document.getElementById('authModal').style.display = 'none';
-    }
-
-    // 发送验证码处理
-    async function handleSendCode() {
-      const email = document.getElementById('authEmail').value.trim();
-      const msgBox = document.getElementById('authMsg');
-      const btnSend = document.getElementById('btnSendCode');
-
-      if (!email || !email.includes('@')) {
-        msgBox.className = 'msg-box msg-error';
-        msgBox.innerText = '请输入有效的邮箱地址';
-        return;
-      }
-
-      msgBox.className = 'msg-box';
-      msgBox.innerText = '正在发送验证码...';
-      btnSend.disabled = true;
-
-      try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/send-code`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        const data = await response.json();
-
-        if (data.success) {
-          msgBox.className = 'msg-box msg-success';
-          msgBox.innerText = '验证码已发送，请查收邮箱';
-          
-          // 60秒倒计时
-          let countdown = 60;
-          const timer = setInterval(() => {
-            countdown--;
-            btnSend.innerText = `${countdown}s 后重试`;
-            if (countdown <= 0) {
-              clearInterval(timer);
-              btnSend.innerText = '获取验证码';
-              btnSend.disabled = false;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS - 下一代智能数字与云协同平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            500: '#06b6d4',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    },
+                    animation: {
+                        'marquee-left': 'marqueeLeft 35s linear infinite',
+                        'marquee-right': 'marqueeRight 35s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        marqueeLeft: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        marqueeRight: {
+                            '0%': { transform: 'translateX(-50%)' },
+                            '100%': { transform: 'translateX(0%)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.4' },
+                            '50%': { opacity: '0.8' },
+                        }
+                    }
+                }
             }
-          }, 1000);
-        } else {
-          msgBox.className = 'msg-box msg-error';
-          msgBox.innerText = data.error || '发送失败';
-          btnSend.disabled = false;
         }
-      } catch (err) {
-        msgBox.className = 'msg-box msg-error';
-        msgBox.innerText = '网络连接失败，请稍后再试';
-        btnSend.disabled = false;
-      }
-    }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans antialiased selection:bg-cyan-500 selection:text-white transition-colors duration-500 bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 overflow-x-hidden">
 
-    // 校验登录处理
-    async function handleVerify() {
-      const email = document.getElementById('authEmail').value.trim();
-      const code = document.getElementById('authCode').value.trim();
-      const msgBox = document.getElementById('authMsg');
+    <canvas id="particleCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
 
-      if (!email || !code) {
-        msgBox.className = 'msg-box msg-error';
-        msgBox.innerText = '请输入邮箱与验证码';
-        return;
-      }
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 sm:px-8 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between glass-nav rounded-2xl px-6 py-3 shadow-lg border border-white/40 dark:border-slate-800/60">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
+                    <i class="fa-solid fa-cubes text-xl"></i>
+                </div>
+                <span class="text-xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-cyan-600 to-blue-600 dark:from-white dark:via-cyan-400 dark:to-blue-400">
+                    NEXUS<span class="text-xs ml-1 px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">AI</span>
+                </span>
+            </div>
 
-      msgBox.className = 'msg-box';
-      msgBox.innerText = '正在验证登录...';
+            <nav class="hidden md:flex items-center space-x-8 font-medium text-sm text-slate-600 dark:text-slate-300">
+                <a href="#hero" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">首页</a>
+                <a href="#features" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">平台优势</a>
+                <a href="#partners" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">合作生态</a>
+                <a href="#footer" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">合规与支持</a>
+            </nav>
 
-      try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth/verify`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, code })
-        });
-        const data = await response.json();
+            <div class="flex items-center space-x-4">
+                <button id="themeToggleBtn" title="切换昼夜模式" class="relative p-2.5 rounded-xl bg-slate-200/60 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-300/80 dark:hover:bg-slate-700 transition-all duration-300 focus:outline-none ring-2 ring-transparent focus:ring-cyan-500">
+                    <i id="themeSunIcon" class="fa-solid fa-sun text-amber-500 text-lg transition-transform duration-500 rotate-0 scale-100 hidden"></i>
+                    <i id="themeMoonIcon" class="fa-solid fa-moon text-cyan-400 text-lg transition-transform duration-500 rotate-0 scale-100 hidden"></i>
+                    <span id="themeText" class="sr-only">Toggle Mode</span>
+                </button>
 
-        if (data.success) {
-          localStorage.setItem('ai_small_token', data.token);
-          localStorage.setItem('ai_small_user', JSON.stringify(data.user));
-          closeAuthModal();
-          renderAuthState();
-        } else {
-          msgBox.className = 'msg-box msg-error';
-          msgBox.innerText = data.error || '验证失败';
+                <a id="consoleBtn" href="#login-card" class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-300">
+                    控制台入口
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section id="hero" class="relative min-h-screen pt-28 pb-16 flex items-center justify-center px-4 sm:px-6 lg:px-8 z-10">
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+                <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-700 dark:text-cyan-300 text-xs sm:text-sm font-medium">
+                    <span class="flex h-2 w-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                    <span>NEXUS 4.0 智能协同云引擎已全面发布</span>
+                </div>
+
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                    连接万物智能 <br>
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-400">
+                        构建下一代云端数字生态
+                    </span>
+                </h1>
+
+                <p class="text-slate-600 dark:text-slate-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                    专为企事业单位与极客打造的全栈智能工作台。融合前沿大模型集群、弹性计算与金融级安全防护，让计算与协作前所未有的敏捷。
+                </p>
+
+                <div class="pt-2 flex flex-wrap justify-center lg:justify-start gap-3">
+                    <div class="flex items-center space-x-2 text-xs font-medium text-slate-600 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 px-3 py-1.5 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+                        <i class="fa-solid fa-bolt text-amber-500"></i>
+                        <span>毫秒级高并发</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs font-medium text-slate-600 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 px-3 py-1.5 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+                        <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                        <span>等保三级认证</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs font-medium text-slate-600 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 px-3 py-1.5 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+                        <i class="fa-solid fa-brain text-purple-500"></i>
+                        <span>多大模型聚合</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="login-card" class="lg:col-span-5 w-full max-w-md mx-auto">
+                <div class="glass-card rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all duration-300 hover:shadow-cyan-500/10">
+                    
+                    <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex items-center justify-between mb-8 border-b border-slate-200/60 dark:border-slate-700/60 pb-4">
+                        <div class="flex space-x-6">
+                            <button id="tabPassword" onclick="switchTab('password')" class="text-lg font-bold text-slate-900 dark:text-white border-b-2 border-cyan-500 pb-1 transition-all">
+                                密码登录
+                            </button>
+                            <button id="tabCode" onclick="switchTab('code')" class="text-lg font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 pb-1 transition-all">
+                                快捷验证码
+                            </button>
+                        </div>
+                        <span class="text-xs text-slate-400 dark:text-slate-500">安全传输加密</span>
+                    </div>
+
+                    <div id="toastMessage" class="hidden mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs flex items-center space-x-2">
+                        <i class="fa-solid fa-circle-info text-sm"></i>
+                        <span id="toastText">请填写完整信息</span>
+                    </div>
+
+                    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                        
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+                                账号 / 电子邮箱
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </span>
+                                <input type="email" id="usernameInput" required placeholder="请输入您的电子邮箱" 
+                                    class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-sm text-slate-800 dark:text-white placeholder-slate-400 transition-all">
+                            </div>
+                        </div>
+
+                        <div id="passwordContainer">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+                                登录密码
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                                    <i class="fa-regular fa-lock"></i>
+                                </span>
+                                <input type="password" id="passwordInput" placeholder="请输入密码" 
+                                    class="w-full pl-10 pr-10 py-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-sm text-slate-800 dark:text-white placeholder-slate-400 transition-all">
+                                <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                    <i id="eyeIcon" class="fa-regular fa-eye-slash text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="codeContainer" style="display: none;">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+                                邮箱 6 位验证码
+                            </label>
+                            <div class="flex space-x-2">
+                                <div class="relative flex-1">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                                        <i class="fa-solid fa-shield-cat"></i>
+                                    </span>
+                                    <input type="text" id="codeInput" placeholder="请输入6位验证码" maxlength="6"
+                                        class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-sm text-slate-800 dark:text-white placeholder-slate-400 transition-all">
+                                </div>
+                                <button type="button" id="sendCodeBtn" onclick="sendVerificationCode()" class="px-4 py-3 rounded-xl font-semibold text-xs text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all shrink-0">
+                                    获取验证码
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs pt-1">
+                            <label class="flex items-center space-x-2 cursor-pointer text-slate-500 dark:text-slate-400">
+                                <input type="checkbox" checked class="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 dark:bg-slate-800">
+                                <span>记住登录状态</span>
+                            </label>
+
+                            <div class="flex items-center space-x-3 font-medium">
+                                <a href="javascript:void(0)" onclick="switchTab('code')" class="text-cyan-600 dark:text-cyan-400 hover:underline">
+                                    快速注册
+                                </a>
+                                <span class="text-slate-300 dark:text-slate-600">|</span>
+                                <a href="javascript:void(0)" onclick="openModal('找回密码功能：重置链接将发送至绑定邮箱。')" class="text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
+                                    找回密码
+                                </a>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-4 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:opacity-95 shadow-lg shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-all transform active:scale-[0.99] flex items-center justify-center space-x-2">
+                            <span id="submitBtnText">密码登录</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-6 border-t border-slate-200/60 dark:border-slate-700/60 text-center">
+                        <p class="text-xs text-slate-400 mb-3">其他方式快捷登录</p>
+                        <div class="flex justify-center space-x-4 text-slate-600 dark:text-slate-300">
+                            <button onclick="showToast('正在调起微信授权登录...')" class="w-9 h-9 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:text-emerald-500 hover:border-emerald-500 transition-all">
+                                <i class="fa-brands fa-weixin"></i>
+                            </button>
+                            <button onclick="showToast('正在调起钉钉扫码登录...')" class="w-9 h-9 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:text-blue-500 hover:border-blue-500 transition-all">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                            <button onclick="showToast('正在调起 GitHub OAuth...')" class="w-9 h-9 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:text-slate-900 dark:hover:text-white hover:border-slate-900 transition-all">
+                                <i class="fa-brands fa-github"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="features" class="relative py-24 px-4 sm:px-6 lg:px-8 z-10">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400">
+                    Core Advantages
+                </h2>
+                <p class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                    重塑数字体验的四大核心优势
+                </p>
+                <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base">
+                    自主研发的基础设施架构，为企业的全生命周期业务增长保驾护航
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-cyan-500/10 border border-white/50 dark:border-slate-800 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xl mb-6 group-hover:bg-cyan-500 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-gauge-high"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">极致计算性能</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                            分布式异构计算节点，边缘网络全网加速，接口响应低至 15ms，打造极致敏捷交互体验。
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-800 text-xs font-semibold text-cyan-600 dark:text-cyan-400 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>了解算力引擎</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-blue-500/10 border border-white/50 dark:border-slate-800 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">全模型协同驱动</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                            原生适配国内外主流 LLM 与多模态 AI，支持智能路由与模型热切换，满足多样化业务场景。
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-800 text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>探索AI矩阵</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-indigo-500/10 border border-white/50 dark:border-slate-800 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-shield-cat"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">金融级数据安全</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                            端到端量子级加密，全链路数据脱敏与多副本实时容灾，确保核心数字资产无懈可击。
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-800 text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>查看安全白皮书</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/10 border border-white/50 dark:border-slate-800 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-expand"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">弹性无缝扩容</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                            基于 Serverless 架构，根据实时流量分钟级自动弹性伸缩，助您轻松应对数百万级突发高峰。
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-800 text-xs font-semibold text-purple-600 dark:text-purple-400 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>架构技术细节</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="partners" class="relative py-20 z-10 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 mb-10 text-center">
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">
+                全球合作伙伴与技术生态
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">
+                无缝连接世界500强企业、主流云服务商与顶尖 AI 大模型提供商
+            </p>
+        </div>
+
+        <div class="space-y-6 marquee-mask">
+            
+            <div class="flex overflow-hidden select-none">
+                <div class="flex space-x-6 animate-marquee-left shrink-0">
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-microsoft text-xl text-blue-500"></i>
+                        <span>Microsoft Azure</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-aws text-xl text-amber-500"></i>
+                        <span>Amazon Web Services</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-google text-xl text-red-500"></i>
+                        <span>Google Cloud</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-cloud text-xl text-orange-500"></i>
+                        <span>阿里云 Aliyun</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-apple text-xl text-slate-800 dark:text-white"></i>
+                        <span>Apple Enterprise</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-cloud-bolt text-xl text-blue-600"></i>
+                        <span>腾讯云 Tencent Cloud</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-server text-xl text-red-600"></i>
+                        <span>华为云 Huawei Cloud</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-nvidia text-xl text-emerald-500"></i>
+                        <span>NVIDIA AI Solutions</span>
+                    </div>
+                </div>
+
+                <div class="flex space-x-6 animate-marquee-left shrink-0" aria-hidden="true">
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-microsoft text-xl text-blue-500"></i>
+                        <span>Microsoft Azure</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-aws text-xl text-amber-500"></i>
+                        <span>Amazon Web Services</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-google text-xl text-red-500"></i>
+                        <span>Google Cloud</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-cloud text-xl text-orange-500"></i>
+                        <span>阿里云 Aliyun</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-apple text-xl text-slate-800 dark:text-white"></i>
+                        <span>Apple Enterprise</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-cloud-bolt text-xl text-blue-600"></i>
+                        <span>腾讯云 Tencent Cloud</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-server text-xl text-red-600"></i>
+                        <span>华为云 Huawei Cloud</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-brands fa-nvidia text-xl text-emerald-500"></i>
+                        <span>NVIDIA AI Solutions</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex overflow-hidden select-none">
+                <div class="flex space-x-6 animate-marquee-right shrink-0">
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-robot text-xl text-emerald-500"></i>
+                        <span>OpenAI GPT-4o</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-brain text-xl text-purple-500"></i>
+                        <span>DeepSeek AI</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-bolt-lightning text-xl text-cyan-500"></i>
+                        <span>Anthropic Claude 3.5</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-atom text-xl text-blue-500"></i>
+                        <span>智谱 AI GLM-4</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-compass text-xl text-indigo-500"></i>
+                        <span>百度文心一言 ERNIE</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-moon text-xl text-cyan-400"></i>
+                        <span>Kimi 月之暗面</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl text-pink-500"></i>
+                        <span>MiniMax 星野</span>
+                    </div>
+                </div>
+
+                <div class="flex space-x-6 animate-marquee-right shrink-0" aria-hidden="true">
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-robot text-xl text-emerald-500"></i>
+                        <span>OpenAI GPT-4o</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-brain text-xl text-purple-500"></i>
+                        <span>DeepSeek AI</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-bolt-lightning text-xl text-cyan-500"></i>
+                        <span>Anthropic Claude 3.5</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-atom text-xl text-blue-500"></i>
+                        <span>智谱 AI GLM-4</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-compass text-xl text-indigo-500"></i>
+                        <span>百度文心一言 ERNIE</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-moon text-xl text-cyan-400"></i>
+                        <span>Kimi 月之暗面</span>
+                    </div>
+                    <div class="glass-card px-6 py-3.5 rounded-2xl flex items-center space-x-3 text-slate-700 dark:text-slate-200 font-semibold text-sm">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl text-pink-500"></i>
+                        <span>MiniMax 星野</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="relative max-w-7xl mx-auto px-4 my-8 z-10">
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
+    </div>
+
+    <footer id="footer" class="relative pt-8 pb-16 px-4 sm:px-6 lg:px-8 z-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+            
+            <div class="md:col-span-8 space-y-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-sm">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <span class="font-bold text-lg text-slate-800 dark:text-white tracking-wider">NEXUS AI 智能协同平台</span>
+                </div>
+
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl">
+                    本平台严格遵循国家数据安全法与网络安全等级保护标准，致力于为用户提供合规、可信、高效的数字化基础设施。所有算法与云服务均已通过国家网信办深度合成服务算法备案。
+                </p>
+
+                <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    <a href="javascript:void(0)" onclick="openModal('【隐私政策】我们高度重视您的隐私与数据保护。未经许可不会向第三方透露。')" class="hover:text-cyan-600 dark:hover:text-cyan-400">《用户服务协议》</a>
+                    <a href="javascript:void(0)" onclick="openModal('【服务条款】详述平台技术使用规范与免责条款。')" class="hover:text-cyan-600 dark:hover:text-cyan-400">《隐私保护政策》</a>
+                    <a href="javascript:void(0)" onclick="openModal('【网络安全】通过ISO27001及等保三级安全合规体系。')" class="hover:text-cyan-600 dark:hover:text-cyan-400">《安全合规白皮书》</a>
+                    <a href="javascript:void(0)" onclick="openModal('【算法备案】网信网备1101082026888号')" class="hover:text-cyan-600 dark:hover:text-cyan-400">《算法备案说明》</a>
+                </div>
+
+                <div class="text-xs text-slate-400 dark:text-slate-500 space-y-1.5 pt-2">
+                    <p>京ICP备 20268888 号 - 1 | 京公网安备 11010802026888 号</p>
+                    <p>© 2026 NEXUS Cloud Technologies Inc. 保留所有权利。</p>
+                </div>
+            </div>
+
+            <div class="md:col-span-4 flex flex-col items-center md:items-end">
+                <div class="glass-card rounded-2xl p-5 border border-white/60 dark:border-slate-800 text-center w-full max-w-[220px]">
+                    
+                    <div class="relative group cursor-pointer" onclick="triggerQrUpload()">
+                        <div id="qrImageContainer" class="w-36 h-36 mx-auto rounded-xl bg-white p-2 border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+                            <svg class="w-full h-full text-slate-800" viewBox="0 0 100 100" fill="currentColor">
+                                <path d="M0,0 H40 V40 H0 Z M10,10 V30 H30 V10 Z M15,15 H25 V25 H15 Z" />
+                                <path d="M60,0 H100 V40 H60 Z M70,10 V30 H90 V10 Z M75,15 H85 V25 H75 Z" />
+                                <path d="M0,60 H40 V100 H0 Z M10,70 V90 H30 V100 H0 Z" />
+                                <rect x="45" y="10" width="10" height="10" />
+                                <rect x="45" y="30" width="10" height="20" />
+                                <rect x="10" y="45" width="20" height="10" />
+                                <rect x="35" y="45" width="20" height="10" />
+                                <rect x="60" y="45" width="15" height="15" />
+                                <rect x="80" y="45" width="15" height="10" />
+                                <rect x="45" y="65" width="10" height="25" />
+                                <rect x="65" y="65" width="20" height="10" />
+                                <rect x="65" y="80" width="30" height="15" />
+                            </svg>
+                            <div class="absolute inset-0 bg-slate-900/70 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg text-[10px] p-1">
+                                <i class="fa-solid fa-arrows-rotate mb-1 text-sm"></i>
+                                <span>点击更换二维码</span>
+                            </div>
+                        </div>
+                        <input type="file" id="qrFileInput" accept="image/*" class="hidden" onchange="handleQrChange(event)">
+                    </div>
+
+                    <div class="mt-3 space-y-1">
+                        <p id="qrTitleText" class="text-xs font-bold text-slate-800 dark:text-slate-200">合作单位交流群</p>
+                        <p class="text-[10px] text-slate-400">扫码对接生态商务合作</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <div id="infoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 shadow-2xl transform scale-95 transition-transform duration-300 border border-white/50 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400">
+                    <i class="fa-solid fa-circle-info text-lg"></i>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white">提示信息</h3>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p id="modalContent" class="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                提示内容...
+            </p>
+            <div class="flex justify-end">
+                <button onclick="closeModal()" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-md">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="particles.js"></script>
+    <script src="ui.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        window.onload = function() {
+            initTheme();
+            resizeCanvas();
+            initParticles();
+            animateParticles();
         }
-      } catch (err) {
-        msgBox.className = 'msg-box msg-error';
-        msgBox.innerText = '服务器响应异常';
-      }
-    }
-
-    // 退出登录
-    function handleLogout() {
-      localStorage.removeItem('ai_small_token');
-      localStorage.removeItem('ai_small_user');
-      renderAuthState();
-    }
-
-    // 页面载入初始化
-    window.addEventListener('DOMContentLoaded', renderAuthState);
-  </script>
+    </script>
 </body>
 </html>
