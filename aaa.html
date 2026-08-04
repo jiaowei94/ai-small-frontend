@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>免登录 AI 聊天助手 - ai-small.xyz</title>
+    <title>Gemini AI 对话空间 - ai-small.xyz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,98 +11,229 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5' }
+                        gemini: {
+                            bg: '#131314',
+                            sidebar: '#1e1f20',
+                            card: '#1e1f20',
+                            input: '#282a2c',
+                            accent: '#7c3aed'
+                        }
                     }
                 }
             }
         }
     </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen relative flex flex-col antialiased">
-    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+<body class="bg-gemini-bg text-slate-100 min-h-screen flex relative overflow-hidden font-sans">
 
-    <header class="sticky top-0 z-50 glass-nav border-b border-slate-200/50 dark:border-slate-800/50">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="/" class="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-brand-500 font-bold">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                <span>返回首页</span>
-            </a>
-            <div class="flex items-center space-x-3">
-                <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold">🤖 Gemini Flash 免登录版</span>
+    <canvas id="particleCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+    <aside id="sidebar" class="w-64 bg-gemini-sidebar flex-col justify-between border-r border-slate-800/60 z-20 transition-all duration-300 flex">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-6">
+                <a href="/" class="flex items-center space-x-2">
+                    <i class="fa-solid fa-sparkles text-cyan-400 text-lg"></i>
+                    <span class="font-bold text-base text-white tracking-wide">ai-small Gemini</span>
+                </a>
+                <a href="/" title="返回首页" class="text-slate-400 hover:text-white text-sm">
+                    <i class="fa-solid fa-house"></i>
+                </a>
             </div>
-        </div>
-    </header>
 
-    <main class="relative z-10 flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col">
-        <div class="glass-card rounded-3xl p-6 flex-1 flex flex-col shadow-2xl border border-white/50 dark:border-slate-800">
-            <div id="chatBox" class="flex-1 overflow-y-auto pr-2 space-y-4 mb-4" style="max-height: calc(100vh - 240px);">
-                <div class="chat-message-item chat-message-ai">
-                    👋 你好！我是免登录 AI 助手。基于 Google Gemini 引擎驱动，有什么我可以帮你的？
+            <button onclick="startNewChat()" class="w-full py-3 px-4 rounded-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-xs font-semibold flex items-center space-x-3 text-slate-200 transition-colors shadow-sm">
+                <i class="fa-solid fa-plus text-cyan-400"></i>
+                <span>发起新对话</span>
+            </button>
+
+            <div class="mt-6">
+                <div class="text-[11px] font-bold text-slate-500 uppercase px-2 mb-2">近期对话</div>
+                <div id="historyList" class="space-y-1 max-h-[60vh] overflow-y-auto">
+                    <div class="p-2 rounded-xl bg-slate-800/40 text-xs text-slate-300 flex items-center space-x-2 cursor-pointer">
+                        <i class="fa-regular fa-message text-slate-500"></i>
+                        <span class="truncate">新的 AI 会话</span>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <form id="chatForm" onsubmit="sendChatMessage(event)" class="flex gap-3">
-                <input type="text" id="chatInput" placeholder="请输入你的问题或提示词..." required class="flex-1 px-5 py-4 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all">
-                <button type="submit" id="sendBtn" class="px-6 py-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 transition-all flex items-center gap-2">
-                    <span>发送</span>
-                </button>
-            </form>
+        <div class="p-4 border-t border-slate-800/80 text-xs text-slate-500 flex items-center justify-between">
+            <span>支持免登录体验</span>
+            <a href="/" class="text-cyan-400 hover:underline">主站首页</a>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen z-10 relative overflow-hidden">
+        
+        <header class="h-14 border-b border-slate-800/50 px-6 flex items-center justify-between bg-gemini-bg/80 backdrop-blur-md">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
+                <select id="modelSelect" class="bg-slate-800/80 text-slate-200 text-xs font-semibold rounded-lg px-3 py-1.5 border border-slate-700 focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash (默认 - 极速响应)</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (深度推理)</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (轻量快答)</option>
+                </select>
+            </div>
+            <div class="text-xs text-slate-400 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Google API 已就绪</span>
+            </div>
+        </header>
+
+        <div id="chatContainer" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 max-w-4xl mx-auto w-full">
+            <div id="welcomeCard" class="my-12 text-center space-y-6">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-3xl mx-auto shadow-xl shadow-cyan-500/20">
+                    <i class="fa-solid fa-sparkles text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight">你好，我是 ai-small AI 助手</h2>
+                    <p class="text-xs text-slate-400 mt-2">基于 Google Gemini 大模型构建，选择下方快捷引导或输入任意内容开始</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto text-left pt-4">
+                    <div onclick="quickSend('用 Python 写一段快速排序代码并带详细注释')" class="p-4 rounded-2xl bg-gemini-card hover:bg-slate-800 border border-slate-800/80 cursor-pointer transition-all">
+                        <i class="fa-solid fa-code text-cyan-400 mb-2"></i>
+                        <h4 class="text-xs font-bold text-white">分析与生成代码</h4>
+                        <p class="text-[11px] text-slate-400 mt-1">生成高效 Python/JS 代码与注解</p>
+                    </div>
+                    <div onclick="quickSend('请帮我撰写一份关于 AI-Small 产品的推广邮件模板')" class="p-4 rounded-2xl bg-gemini-card hover:bg-slate-800 border border-slate-800/80 cursor-pointer transition-all">
+                        <i class="fa-solid fa-pen-nib text-purple-400 mb-2"></i>
+                        <h4 class="text-xs font-bold text-white">撰写文本与邮件</h4>
+                        <p class="text-[11px] text-slate-400 mt-1">定制专业文案与商务沟通内容</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 md:pb-6 max-w-4xl mx-auto w-full">
+            <div class="bg-gemini-input rounded-3xl p-3 border border-slate-700/60 shadow-2xl relative">
+                <textarea id="userInput" rows="2" placeholder="问问 Gemini..."
+                    class="w-full bg-transparent text-sm text-white placeholder-slate-400 focus:outline-none resize-none px-3 pt-1"></textarea>
+                
+                <div class="flex items-center justify-between pt-2 px-2 border-t border-slate-800/60">
+                    <div class="text-[11px] text-slate-500">
+                        Shift + Enter 换行
+                    </div>
+                    <button id="sendBtn" onclick="sendMessage()" class="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs hover:bg-slate-200 transition-all flex items-center space-x-1">
+                        <span>发送</span>
+                        <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-500 text-center mt-2">Gemini 可能会生成不准确的信息，请保持理性参考。</p>
         </div>
     </main>
 
     <script src="config.js"></script>
     <script src="particles.js"></script>
     <script>
-        async function sendChatMessage(e) {
-            e.preventDefault();
-            const input = document.getElementById('chatInput');
-            const chatBox = document.getElementById('chatBox');
-            const sendBtn = document.getElementById('sendBtn');
-            const message = input.value.trim();
+        let chatHistory = [];
 
-            if (!message) return;
+        function quickSend(text) {
+            document.getElementById('userInput').value = text;
+            sendMessage();
+        }
 
-            // 1. 追加用户消息气泡
-            const userBubble = document.createElement('div');
-            userBubble.className = 'chat-message-item chat-message-user';
-            userBubble.textContent = message;
-            chatBox.appendChild(userBubble);
+        function startNewChat() {
+            chatHistory = [];
+            document.getElementById('chatContainer').innerHTML = `
+                <div id="welcomeCard" class="my-12 text-center space-y-6">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-3xl mx-auto shadow-xl">
+                        <i class="fa-solid fa-sparkles text-white"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">新对话已建立</h2>
+                        <p class="text-xs text-slate-400 mt-2">随时问我任何问题</p>
+                    </div>
+                </div>`;
+        }
 
-            input.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
+        async function sendMessage() {
+            const inputEl = document.getElementById('userInput');
+            const prompt = inputEl.value.trim();
+            if (!prompt) return;
 
-            // 2. 追加 AI 思考中占位气泡
-            const aiBubble = document.createElement('div');
-            aiBubble.className = 'chat-message-item chat-message-ai';
-            aiBubble.textContent = '思考中...';
-            chatBox.appendChild(aiBubble);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            const welcomeCard = document.getElementById('welcomeCard');
+            if (welcomeCard) welcomeCard.remove();
 
-            sendBtn.disabled = true;
+            const model = document.getElementById('modelSelect').value;
+            const container = document.getElementById('chatContainer');
+
+            // 1. 渲染用户消息
+            appendMessage('user', prompt);
+            inputEl.value = '';
+
+            // 2. 渲染 AI 加载占位符
+            const loadingId = 'loading-' + Date.now();
+            appendLoading(loadingId);
 
             try {
-                // 请求 Vercel 后端 Gemini API
+                // 请求 Vercel 后端 API 接口
                 const res = await fetch(`${CONFIG.API_BASE_URL}/api/ai/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        model: model,
+                        history: chatHistory
+                    })
                 });
+
                 const data = await res.json();
+                document.getElementById(loadingId)?.remove();
 
                 if (data.success) {
-                    aiBubble.textContent = data.reply;
+                    appendMessage('ai', data.reply);
+                    chatHistory.push({ role: 'user', content: prompt });
+                    chatHistory.push({ role: 'model', content: data.reply });
                 } else {
-                    aiBubble.textContent = '❌ AI 思考失败：' + (data.message || '系统繁忙');
+                    appendMessage('ai', '⚠️ 请求失败: ' + (data.message || '模型未返回响应，请检查后端设置'));
                 }
             } catch (err) {
-                console.error(err);
-                aiBubble.textContent = '❌ 请求异常，请稍后重试';
-            } finally {
-                sendBtn.disabled = false;
-                chatBox.scrollTop = chatBox.scrollHeight;
+                document.getElementById(loadingId)?.remove();
+                appendMessage('ai', '⚠️ 网络错误: 无法连接到 AI 后端服务，请确认后端 API_BASE_URL。');
             }
         }
+
+        function appendMessage(role, text) {
+            const container = document.getElementById('chatContainer');
+            const isUser = role === 'user';
+            
+            const msgHtml = `
+                <div class="flex items-start space-x-3 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${isUser ? 'bg-cyan-600' : 'bg-purple-600'}">
+                        ${isUser ? '你' : '<i class="fa-solid fa-sparkles"></i>'}
+                    </div>
+                    <div class="max-w-[80%] p-4 rounded-2xl text-xs leading-relaxed ${isUser ? 'bg-cyan-600 text-white' : 'bg-gemini-card text-slate-200 border border-slate-800'} shadow-md">
+                        <pre class="whitespace-pre-wrap font-sans">${text}</pre>
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', msgHtml);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendLoading(id) {
+            const container = document.getElementById('chatContainer');
+            const loadingHtml = `
+                <div id="${id}" class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-xs text-white">
+                        <i class="fa-solid fa-sparkles animate-spin"></i>
+                    </div>
+                    <div class="bg-gemini-card px-4 py-3 rounded-2xl border border-slate-800 text-xs text-slate-400 flex items-center space-x-2">
+                        <span class="animate-pulse">Gemini 思考中...</span>
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', loadingHtml);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        document.getElementById('userInput')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
     </script>
 </body>
 </html>
