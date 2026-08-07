@@ -27,18 +27,22 @@ export async function sendEmailCode(email: string): Promise<{ success: boolean; 
       body: JSON.stringify({ email }),
     });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: '发送验证码失败' }));
-      return { success: false, message: err.message || '发送验证码失败，请稍后再试' };
+    const rawText = await res.text();
+    let data: any = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch {
+      data = {};
     }
 
-    const data = await res.json();
-    return { success: true, message: data.message || '验证码已发送至您的邮箱，请注意查收！' };
+    if (res.ok && data.success !== false) {
+      return { success: true, message: data.message || '验证码已发送至您的邮箱，请注意查收！' };
+    } else {
+      return { success: false, message: data.message || '发送验证码失败，请稍后再试' };
+    }
   } catch (e: any) {
-    // Demo fallback mode when local testing or offline
     console.warn('API call failed, using client simulation:', e);
     const mockCode = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log(`[Demo Mode] Simulated Verification Code for ${email}:`, mockCode);
     return {
       success: true,
       message: `验证码已发送！(测试仿真码: ${mockCode}，可在登录框直接填入)`,
@@ -61,13 +65,14 @@ export async function loginUser(payload: {
     });
 
     if (res.ok) {
-      const data = await res.json();
+      const rawText = await res.text();
+      const data = rawText ? JSON.parse(rawText) : {};
       if (data.token) localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token);
       if (data.user) {
         localStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(data.user));
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(data.user));
       }
-      return { success: true, user: data.user, token: data.token, message: '登录成功' };
+      return { success: true, user: data.user, token: data.token, message: data.message || '登录成功' };
     }
   } catch (err) {
     console.warn('Backend login endpoint unavailable, executing client auth fallback:', err);
@@ -87,7 +92,6 @@ export async function loginUser(payload: {
   localStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(mockUser));
   localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUser));
 
-  // Sync to Supabase public.users if connected
   try {
     await supabase.from('users').upsert({
       id: mockUser.id,
@@ -122,9 +126,16 @@ export async function sendAIChatRequest(
       body: JSON.stringify({ messages, model }),
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      return data.reply || data.text || '没有返回有效响应。';
+    const rawText = await res.text();
+    if (rawText) {
+      try {
+        const data = JSON.parse(rawText);
+        if (data.reply || data.text) {
+          return data.reply || data.text;
+        }
+      } catch {
+        if (res.ok) return rawText;
+      }
     }
   } catch (e) {
     console.warn('Backend AI Chat endpoint failed, resorting to client fallback response:', e);
@@ -160,9 +171,14 @@ export async function analyzeDietImage(
       body: JSON.stringify({ image: imageDataBase64, prompt: customPrompt }),
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      return data.log;
+    const rawText = await res.text();
+    if (rawText) {
+      try {
+        const data = JSON.parse(rawText);
+        if (data.log) return data.log;
+      } catch {
+        // Fallthrough
+      }
     }
   } catch (e) {
     console.warn('Backend diet analysis failed, fallback generating structured nutrition data:', e);
